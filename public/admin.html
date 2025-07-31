@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员面板</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --text-color: #333;
+            --light-text: #888;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--container-bg);
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #welcomeAdmin {
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        .navbar button {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .navbar button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        .navbar button:disabled {
+            background-color: #ccc;
+            color: #777;
+            cursor: not-allowed;
+        }
+        .logout-btn:hover:not(:disabled) {
+            background-color: #c0392b;
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--container-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 { color: #2c3e50; margin-top: 0; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 2rem 0; }
+        .hidden { display: none; }
+
+        /* 表单与输入框，和 index.html 一致 */
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: bold; }
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #fff;
+            color: var(--text-color);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(52,152,219,0.4);
+        }
+        textarea { resize: vertical; }
+
+        /* 按钮 */
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover:not(:disabled) { background-color: #2980b9; transform: scale(1.03); }
+        .kick-btn { background-color: #e74c3c; }
+        .kick-btn:hover:not(:disabled) { background-color: #c0392b; }
+
+        /* 表格 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th { background: #f2f2f2; }
+
+        /* 用户列表 */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+
+        /* 提示消息 */
+        .message {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success { color: #155724; background-color: #d4edda; }
+        .error   { color: #721c24; background-color: #f8d7da; }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .container { padding: 1rem; }
+            table, th, td { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-left">
+            <span id="welcomeAdmin"></span>
+        </div>
+        <div class="nav-right">
+            <button id="logoutBtn" disabled class="logout-btn">登出</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 管理员首次设置 -->
+        <div id="setupContainer" class="hidden">
+            <h1>管理员首次设置</h1>
+            <p>检测到服务器首次运行，请设置您的管理员账户。</p>
+            <form id="setupForm">
+                <div class="form-group">
+                    <label for="setupUsername">管理员用户名:</label>
+                    <input type="text" id="setupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="setupPassword">管理员密码 (至少6位):</label>
+                    <input type="password" id="setupPassword" required minlength="6">
+                </div>
+                <button type="submit">创建管理员账户</button>
+            </form>
+            <div id="setupMessage" class="message"></div>
+        </div>
+
+        <!-- 管理员登录 -->
+        <div id="loginContainer" class="hidden">
+            <h1>管理员登录</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">用户名:</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit">登录</button>
+            </form>
+            <div id="loginMessage" class="message"></div>
+        </div>
+
+        <!-- 管理面板 -->
+        <div id="panelContainer" class="hidden">
+            <h2>聊天室列表</h2>
+            <button onclick="loadRooms()">刷新聊天室列表</button>
+            <table id="roomTable">
+                <thead>
+                    <tr><th>房间名</th><th>在线人数</th><th>消息数</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <h3>聊天室用户列表</h3>
+            <p id="selectedRoom">未选择聊天室</p>
+            <ul id="userList"></ul>
+            <div id="kickResult" class="message"></div>
+
+            <hr>
+
+            <h3>聊天室管理</h3>
+            <div class="form-group">
+                <label for="targetRoom">房间名:</label>
+                <input id="targetRoom" type="text" placeholder="房间名">
+            </div>
+            <button onclick="closeRoom()">关停聊天室</button>
+            <div id="closeRoomResult" class="message"></div>
+
+            <hr>
+
+            <h3>用户权限管理</h3>
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input id="username" type="text" placeholder="用户名">
+            </div>
+            <div class="form-group">
+                <label for="permission">权限:</label>
+                <select id="permission">
+                    <option value="true">允许创建聊天室</option>
+                    <option value="false">禁止创建聊天室</option>
+                </select>
+            </div>
+            <button onclick="setPermission()">修改权限</button>
+            <div id="permissionResult" class="message"></div>
+
+            <hr>
+
+            <h3>发送系统公告</h3>
+            <div class="form-group">
+                <label for="broadcastMsg">公告内容:</label>
+                <textarea id="broadcastMsg" rows="3" placeholder="输入公告内容"></textarea>
+            </div>
+            <button onclick="broadcast()">发送公告</button>
+            <div id="broadcastResult" class="message"></div>
+
+            <hr>
+
+            <!-- 新增：服务器管理面板 -->
+            <h3>服务器管理面板</h3>
+            <form id="serverConfigForm" style="margin-bottom:1rem;">
+                <div class="form-group">
+                    <label for="httpPort">HTTP端口:</label>
+                    <input type="number" id="httpPort" required>
+                </div>
+                <div class="form-group">
+                    <label for="httpsPort">HTTPS端口:</label>
+                    <input type="number" id="httpsPort" required>
+                </div>
+                <div class="form-group">
+                    <label for="sslEnabled">启用SSL:</label>
+                    <input type="checkbox" id="sslEnabled">
+                </div>
+                <div class="form-group">
+                    <label for="sslCertPath">证书路径:</label>
+                    <input type="text" id="sslCertPath" readonly>
+                    <button type="button" onclick="uploadCert('cert')">上传证书</button>
+                </div>
+                <div class="form-group">
+                    <label for="sslKeyPath">私钥路径:</label>
+                    <input type="text" id="sslKeyPath" readonly>
+                    <button type="button" onclick="uploadCert('key')">上传私钥</button>
+                </div>
+                <button type="submit">保存配置</button>
+                <button type="button" onclick="restartServer()" style="background:#e67e22;margin-left:10px;">关闭服务器</button>
+            </form>
+            <div id="serverConfigMsg" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        let authHeader = null;
+        const logoutBtn = document.getElementById('logoutBtn');
+        const welcomeAdmin = document.getElementById('welcomeAdmin');
+
+        const ui = {
+            setupContainer: document.getElementById('setupContainer'),
+            loginContainer: document.getElementById('loginContainer'),
+            panelContainer: document.getElementById('panelContainer'),
+            setupForm: document.getElementById('setupForm'),
+            loginForm: document.getElementById('loginForm'),
+            setupMessage: document.getElementById('setupMessage'),
+            loginMessage: document.getElementById('loginMessage'),
+            kickResult: document.getElementById('kickResult'),
+            closeRoomResult: document.getElementById('closeRoomResult'),
+            permissionResult: document.getElementById('permissionResult'),
+            broadcastResult: document.getElementById('broadcastResult'),
+            roomTableBody: document.querySelector("#roomTable tbody"),
+            userList: document.getElementById("userList"),
+            selectedRoom: document.getElementById("selectedRoom"),
+            targetRoomInput: document.getElementById("targetRoom"),
+            usernameInput: document.getElementById("username"),
+            permissionSelect: document.getElementById("permission"),
+            broadcastMsgTextarea: document.getElementById("broadcastMsg"),
+        };
+
+        function showMessage(el, text, isError=false){
+            el.textContent = text;
+            el.className = 'message ' + (isError?'error':'success');
+            el.style.display = 'block';
+            setTimeout(() => el.style.display='none',3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async ()=>{
+            try {
+                let res = await fetch('/admin/status');
+                let {isConfigured} = await res.json();
+                if(isConfigured) ui.loginContainer.classList.remove('hidden');
+                else ui.setupContainer.classList.remove('hidden');
+            } catch {
+                alert("无法连接服务器");
+            }
+        });
+
+        ui.setupForm.addEventListener('submit', async e=>{
+            e.preventDefault();
+            let username=document.getElementById('setupUsername').value;
+            let password=document.getElementById('setupPassword').value;
+            let res=await fetch('/setup/admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+            let data=await res.json();
+            if(res.ok){
+                showMessage(ui.setupMessage,data.message);
+                ui.setupContainer.classList.add('hidden');
+                ui.loginContainer.classList.remove('hidden');
+                document.getElementById('loginUsername').value=username;
+            } else showMessage(ui.setupMessage,'错误:'+data.error,true);
+        });
+
+        ui.loginForm.addEventListener('submit', async e=>{
+            e.preventDefault();
+            let username=document.getElementById('loginUsername').value;
+            let password=document.getElementById('loginPassword').value;
+            authHeader="Basic "+btoa(username+":"+password);
+            let res=await fetch('/admin/rooms',{headers:{Authorization:authHeader}});
+            if(res.ok){
+                showMessage(ui.loginMessage,'登录成功');
+                logoutBtn.disabled=false;
+                welcomeAdmin.textContent=`欢迎, ${username}`;
+                setTimeout(()=>{
+                    ui.loginContainer.classList.add('hidden');
+                    afterLogin();
+                },800);
+            } else {
+                authHeader=null;
+                showMessage(ui.loginMessage,'登录失败',true);
+            }
+        });
+
+        logoutBtn.addEventListener('click', ()=>{
+            authHeader=null;
+            logoutBtn.disabled=true;
+            welcomeAdmin.textContent='';
+            ui.panelContainer.classList.add('hidden');
+            ui.loginContainer.classList.remove('hidden');
+        });
+
+        async function handleApiCall(url,opts,el){
+            if(!authHeader) return alert("请先登录");
+            opts.headers={...opts.headers,Authorization:authHeader};
+            try{
+                let r=await fetch(url,opts),d=await r.json().catch(()=>({message:r.statusText}));
+                showMessage(el,d.message||d.error,!r.ok);
+                return {ok:r.ok,data:d};
+            }catch{
+                showMessage(el,'网络出错',true);
+                return {ok:false};
+            }
+        }
+
+        async function loadRooms(){
+            let r=await fetch('/admin/rooms',{headers:{Authorization:authHeader}});
+            if(!r.ok) return showMessage(ui.kickResult,'加载房间失败',true);
+            let rooms=await r.json();
+            ui.roomTableBody.innerHTML='';
+            rooms.forEach(rm=>{
+                let tr=document.createElement('tr');
+                tr.innerHTML=`<td><a href="#" onclick="event.preventDefault();loadRoomUsers('${rm.room}')">${rm.room}</a></td><td>${rm.userCount}</td><td>${rm.messages}</td>`;
+                ui.roomTableBody.appendChild(tr);
+            });
+        }
+
+        async function loadRoomUsers(room){
+            ui.selectedRoom.textContent=`当前房间：${room}`;
+            ui.targetRoomInput.value=room;
+            let r=await fetch(`/admin/room-users?room=${encodeURIComponent(room)}`,{headers:{Authorization:authHeader}});
+            if(!r.ok) return showMessage(ui.kickResult,'加载用户失败',true);
+            let {users}=await r.json();
+            ui.userList.innerHTML='';
+            users.forEach(u=>{
+                let li=document.createElement('li');
+                li.innerHTML=`<span>${u}</span> <button class="kick-btn" onclick="kickUser('${room}','${u}')">踢出</button>`;
+                ui.userList.appendChild(li);
+            });
+        }
+
+        async function kickUser(room,username){
+            let res=await handleApiCall('/admin/kick-user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room,username})},ui.kickResult);
+            if(res.ok) loadRoomUsers(room);
+        }
+
+        async function closeRoom(){
+            let room=ui.targetRoomInput.value.trim();
+            if(!room) return alert("请输入房间名");
+            if(!confirm(`关停${room}?`)) return;
+            let res=await handleApiCall('/admin/close-room',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room})},ui.closeRoomResult);
+            if(res.ok){loadRooms();ui.userList.innerHTML='';ui.selectedRoom.textContent='未选择聊天室';}
+        }
+
+        async function setPermission(){
+            let username=ui.usernameInput.value.trim();
+            let can=ui.permissionSelect.value==='true';
+            if(!username) return alert("用户名为空");
+            await handleApiCall('/admin/set-permission',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,canCreateRoom:can})},ui.permissionResult);
+        }
+
+        async function broadcast(){
+            let msg=ui.broadcastMsgTextarea.value.trim();
+            if(!msg) return alert("公告为空");
+            let res=await handleApiCall('/admin/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})},ui.broadcastResult);
+            if(res.ok) ui.broadcastMsgTextarea.value='';
+        }
+
+        // 新增：服务器管理面板相关
+        async function loadServerConfig() {
+            let r = await fetch('/admin/server-config', {headers:{Authorization:authHeader}});
+            if(!r.ok) return;
+            let cfg = await r.json();
+            document.getElementById('httpPort').value = cfg.httpPort;
+            document.getElementById('httpsPort').value = cfg.httpsPort;
+            document.getElementById('sslEnabled').checked = !!cfg.sslEnabled;
+            document.getElementById('sslCertPath').value = cfg.sslCertPath || '';
+            document.getElementById('sslKeyPath').value = cfg.sslKeyPath || '';
+        }
+
+        document.getElementById('serverConfigForm').onsubmit = async function(e) {
+            e.preventDefault();
+            let body = {
+                httpPort: document.getElementById('httpPort').value,
+                httpsPort: document.getElementById('httpsPort').value,
+                sslEnabled: document.getElementById('sslEnabled').checked,
+                sslCertPath: document.getElementById('sslCertPath').value,
+                sslKeyPath: document.getElementById('sslKeyPath').value
+            };
+            let r = await fetch('/admin/server-config', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json', Authorization:authHeader},
+                body: JSON.stringify(body)
+            });
+            let d = await r.json();
+            showMessage(document.getElementById('serverConfigMsg'), d.message || d.error, !r.ok);
+        };
+
+        async function uploadCert(type) {
+            if(!authHeader) return alert("请先登录");
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.onchange = async () => {
+                let file = input.files[0];
+                if(!file) return;
+                let fd = new FormData();
+                fd.append('file', file);
+                fd.append('type', type);
+                let r = await fetch('/admin/upload-cert', {
+                    method: 'POST',
+                    headers: { Authorization: authHeader },
+                    body: fd
+                });
+                let d = await r.json();
+                showMessage(document.getElementById('serverConfigMsg'), d.message || d.error, !r.ok);
+                if(d.path){
+                    if(type==='cert') document.getElementById('sslCertPath').value = d.path;
+                    if(type==='key') document.getElementById('sslKeyPath').value = d.path;
+                }
+            };
+            input.click();
+        }
+
+        async function restartServer() {
+            if(!authHeader) return alert("请先登录");
+            if(!confirm("确定要关闭服务器吗？")) return;
+            let r = await fetch('/admin/restart', {
+                method: 'POST',
+                headers: { Authorization: authHeader }
+            });
+            let d = await r.json();
+            showMessage(document.getElementById('serverConfigMsg'), d.message || d.error, !r.ok);
+        }
+
+        // 登录后自动加载服务器配置
+        async function afterLogin() {
+            ui.panelContainer.classList.remove('hidden');
+            loadRooms();
+            await loadServerConfig();
+        }
+    </script>
+</body>
+</html>
