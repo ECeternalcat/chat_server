@@ -16,5 +16,9 @@
     "level": "^10.0.0",
     "multer": "^2.0.2",
     "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.8",
+    "mime-types": "^3.0.1"
   }
 }

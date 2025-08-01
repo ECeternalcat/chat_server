@@ -6,60 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="/socket.io/socket.io.js"></script>
     <style>
-        /* 通用开关开关样式 */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            position: absolute;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--border-color);
-            border-radius: 12px;
-            transition: 0.4s;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: 0.4s;
-        }
-
-        .toggle-switch input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-
-        .toggle-switch input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* 边距调整 */
-        .toggle-switch + label {
-            margin-left: 8px;
-            vertical-align: middle;
-            user-select: none;
-            cursor: pointer;
-            color: var(--text-color);
-            font-size: 14px;
-        }
-
+        /* ... [您原有的 CSS 代码保持不变] ... */
         :root {
             --primary-color: #3498db;
             --secondary-color: #2ecc71;
@@ -72,12 +19,7 @@
             --my-msg-bg: #3498db;
             --other-msg-bg: #ecf0f1;
         }
-
-        /* 全局重置 */
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
                 sans-serif;
@@ -90,7 +32,6 @@
             min-height: 100vh;
             padding: 1rem;
         }
-
         .app-container {
             width: 100%;
             max-width: 1000px;
@@ -103,49 +44,19 @@
             flex-direction: column;
             overflow: hidden;
         }
-
-        /* 视图切换 */
-        .view {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        .hidden {
-            display: none !important;
-        }
-
-        /* 登录/注册视图 */
+        .view { display: flex; flex-direction: column; height: 100%; }
+        .hidden { display: none !important; }
         #loginView {
             gap: 1.5rem;
             align-items: center;
             justify-content: center;
             padding: 2rem;
         }
-
-        .auth-form {
-            width: 100%;
-            max-width: 320px;
-        }
-
-        .form-title {
-            text-align: center;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        input,
-        button {
-            font-size: 16px;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        input:not([type="checkbox"]) {
+        .auth-form { width: 100%; max-width: 320px; }
+        .form-title { text-align: center; color: var(--text-color); margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        input, button { font-size: 16px; }
+        input[type="text"], input[type="password"], input[type="email"], input:not([type="checkbox"]) {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
@@ -153,7 +64,6 @@
             background-color: #fff;
             color: #333;
         }
-
         button {
             width: 100%;
             padding: 12px;
@@ -164,62 +74,17 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
-        button:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-secondary {
-            background-color: #7f8c8d;
-        }
-
-        .btn-secondary:hover {
-            background-color: #6c7a7d;
-        }
-
-        .divider {
-            text-align: center;
-            color: var(--light-text);
-            margin: 1rem 0;
-        }
-
-        /* 聊天视图 */
-        #chatView {
-            flex-direction: row;
-            height: 100%;
-            gap: 1rem;
-        }
-
-        /* 响应式布局改造：大屏两栏，小屏单栏 */
+        button:hover { background-color: #2980b9; }
+        .btn-secondary { background-color: #7f8c8d; }
+        .btn-secondary:hover { background-color: #6c7a7d; }
+        .divider { text-align: center; color: var(--light-text); margin: 1rem 0; }
+        #chatView { flex-direction: row; height: 100%; gap: 1rem; }
         @media (max-width: 700px) {
-            #chatView {
-                flex-direction: column;
-            }
-            .chat-main,
-            .chat-sidebar {
-                flex: none;
-                width: 100%;
-                max-height: 50%;
-            }
+            #chatView { flex-direction: column; }
+            .chat-main, .chat-sidebar { flex: none; width: 100%; max-height: 50%; }
         }
-
-        .chat-main {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            min-width: 0; /* 防止子元素超出 */
-        }
-
-        .chat-sidebar {
-            flex: 1;
-            background-color: #fdfdfd;
-            padding: 1rem;
-            overflow-y: auto;
-            min-width: 0;
-        }
-
-        /* 固定顶部的房间加入区 */
+        .chat-main { flex: 3; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); min-width: 0; }
+        .chat-sidebar { flex: 1; background-color: #fdfdfd; padding: 1rem; overflow-y: auto; min-width: 0; }
         .room-join {
             padding: 1rem;
             border-bottom: 1px solid var(--border-color);
@@ -231,204 +96,80 @@
             min-width: 0;
             background: var(--container-bg);
         }
-
         .room-join input {
-            flex: 1 1 120px;      /* 基础宽度150px，可伸缩 */
-            max-width: 235px;    /* 限制最大宽度 */
+            flex: 1 1 120px;
+            max-width: 235px;
             min-width: 100px;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
         }
+        .room-join .row { display: flex; gap: 8px; flex: 0 0 auto; align-items: center; min-width: 130px; }
+        .room-join button { padding: 8px 16px; width: auto; white-space: nowrap; cursor: pointer; }
+        #messages { flex: 1; padding: 1rem; overflow-y: auto; min-width: 0; }
+        .message { margin-bottom: 1rem; display: flex; min-width: 0; }
+        .message-bubble { padding: 8px 12px; border-radius: 18px; max-width: 70%; word-break: break-word; }
+        .message-info { font-size: 0.75rem; color: var(--light-text); margin: 0 5px 4px; white-space: nowrap; user-select: none; }
+        .my-message { justify-content: flex-end; }
+        .my-message .message-bubble { background-color: var(--my-msg-bg); color: white; }
+        .my-message .message-info { text-align: right; }
+        .other-message { justify-content: flex-start; }
+        .other-message .message-bubble { background-color: var(--other-msg-bg); color: var(--text-color); }
+        .system-message { justify-content: center; margin: 1rem 0; }
+        .system-message .message-bubble { background-color: var(--system-msg-bg); color: var(--light-text); font-size: 0.8rem; font-style: italic; }
+        .system-message .message-info { display: none; }
+        .temp-message { opacity: 1; transition: opacity 1s ease-out; }
+        .temp-message.fading-out { opacity: 0; }
+        .msg-form { display: flex; padding: 1rem; border-top: 1px solid var(--border-color); gap: 10px; min-width: 0; background: var(--container-bg); }
+        .msg-form input { flex: 1; min-width: 0; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; }
+        .msg-form button { width: auto; padding: 10px 16px; border-radius: 6px; background-color: var(--primary-color); color: white; border: none; cursor: pointer; transition: background-color 0.2s; white-space: nowrap; }
+        .msg-form button:hover { background-color: #2980b9; }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); border-radius: 12px; transition: 0.4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: 0.4s; }
+        .toggle-switch input:checked + .slider { background-color: var(--primary-color); }
+        .toggle-switch input:checked + .slider:before { transform: translateX(20px); }
+        .toggle-switch + label { margin-left: 8px; vertical-align: middle; user-select: none; cursor: pointer; color: var(--text-color); font-size: 14px; }
+        .temp-toggle-container { display: flex; align-items: center; margin-left: 1rem; }
+        .user-list { list-style-type: none; padding: 0; margin: 0; font-size: 14px; word-break: break-word; }
+        .user-list li { padding: 8px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-list .me { font-weight: bold; color: var(--primary-color); }
+        .user-list .admin::after { content: ' (管理员)'; color: #e74c3c; font-size: 0.8em; }
+        #notification { position: absolute; top: 0; left: 0; right: 0; padding: 1rem; text-align: center; color: white; font-weight: bold; transform: translateY(-100%); transition: transform 0.3s ease-in-out; z-index: 1000; pointer-events: none; }
+        #notification.show { transform: translateY(0); pointer-events: auto; }
+        #notification.success { background-color: var(--secondary-color); }
+        #notification.error { background-color: #e74c3c; }
 
-        .room-join .row {
+        /* ---【新增】--- 退出登录按钮和其容器的样式 */
+        .user-info-header {
             display: flex;
-            gap: 8px;
-            flex: 0 0 auto;       /* 不缩放 */
+            justify-content: space-between;
             align-items: center;
-            min-width: 130px;
-        }
-
-        /* 进入按钮大小自适应内容 */
-        .room-join button {
-            padding: 8px 16px;
-            width: auto;          /* 宽度自适应 */
-            white-space: nowrap;  /* 防止换行 */
-            cursor: pointer;
-        }
-
-        #messages {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            min-width: 0;
-        }
-
-        .message {
             margin-bottom: 1rem;
-            display: flex;
-            min-width: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
         }
-
-        .message-bubble {
-            padding: 8px 12px;
-            border-radius: 18px;
-            max-width: 70%;
-            word-break: break-word;
-        }
-
-        .message-info {
-            font-size: 0.75rem;
-            color: var(--light-text);
-            margin: 0 5px 4px;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .my-message {
-            justify-content: flex-end;
-        }
-
-        .my-message .message-bubble {
-            background-color: var(--my-msg-bg);
-            color: white;
-        }
-
-        .my-message .message-info {
-            text-align: right;
-        }
-
-        .other-message {
-            justify-content: flex-start;
-        }
-
-        .other-message .message-bubble {
-            background-color: var(--other-msg-bg);
-            color: var(--text-color);
-        }
-
-        .system-message {
-            justify-content: center;
-            margin: 1rem 0;
-        }
-
-        .system-message .message-bubble {
-            background-color: var(--system-msg-bg);
-            color: var(--light-text);
-            font-size: 0.8rem;
-            font-style: italic;
-        }
-
-        .system-message .message-info {
-            display: none;
-        }
-
-        .temp-message {
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-
-        .temp-message.fading-out {
-            opacity: 0;
-        }
-
-        /* 底部固定的消息表单 */
-        .msg-form {
-            display: flex;
-            padding: 1rem;
-            border-top: 1px solid var(--border-color);
-            gap: 10px;
-            min-width: 0;
-            background: var(--container-bg);
-        }
-
-        .msg-form input {
-            flex: 1;
-            min-width: 0;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        .msg-form button {
-            width: auto;
-            padding: 10px 16px;
-            border-radius: 6px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-
-        .msg-form button:hover {
-            background-color: #2980b9;
-        }
-
-        /* 临时开关容器 */
-        .temp-toggle-container {
-            display: flex;
-            align-items: center;
-            margin-left: 1rem;
-        }
-
-        .user-list {
-            list-style-type: none;
-            padding: 0;
+        #welcome {
             margin: 0;
-            font-size: 14px;
-            word-break: break-word;
-        }
-
-        .user-list li {
-            padding: 8px;
-            border-bottom: 1px solid #f0f0f0;
+            font-size: 1em;
+            font-weight: bold;
+            color: var(--text-color);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        .user-list .me {
-            font-weight: bold;
-            color: var(--primary-color);
+        #logoutBtn {
+            padding: 4px 10px;
+            font-size: 12px;
+            width: auto; /* 宽度自适应内容 */
+            background-color: #95a5a6; /* 次要按钮颜色 */
+            flex-shrink: 0; /* 防止按钮被压缩 */
+        }
+        #logoutBtn:hover {
+            background-color: #e74c3c; /* 悬浮时显示为危险操作颜色 */
         }
 
-        .user-list .admin::after {
-            content: ' (管理员)';
-            color: #e74c3c;
-            font-size: 0.8em;
-        }
-
-        /* 通知栏 */
-        #notification {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 1rem;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
-            pointer-events: none;
-        }
-
-        #notification.show {
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        #notification.success {
-            background-color: var(--secondary-color);
-        }
-
-        #notification.error {
-            background-color: #e74c3c;
-        }
     </style>
 </head>
 <body>
@@ -437,6 +178,7 @@
     <div class="app-container">
         <!-- 登录/注册视图 -->
         <div id="loginView" class="view">
+            <!-- ... [登录/注册表单保持不变] ... -->
             <div class="auth-form">
                 <h2 class="form-title">WebChat</h2>
                 <form id="loginForm">
@@ -471,6 +213,7 @@
         <!-- 聊天视图 -->
         <div id="chatView" class="view hidden">
             <div class="chat-main">
+                <!-- ... [聊天主窗口保持不变] ... -->
                 <div class="room-join">
                     <input id="room" placeholder="聊天室名称" required />
                     <input id="roomPass" type="password" placeholder="房间密码" required />
@@ -497,16 +240,20 @@
                 </form>
             </div>
             <div class="chat-sidebar">
+                <!-- ---【新增】--- 用户信息和退出登录按钮的容器 -->
+                <div class="user-info-header">
+                    <h4 id="welcome"></h4>
+                    <button id="logoutBtn" type="button">退出登录</button>
+                </div>
                 <h3>在线用户</h3>
                 <ul id="userList" class="user-list"></ul>
-                <h4 id="welcome"></h4>
             </div>
         </div>
     </div>
 
     <script>
         const socket = io();
-        const SESSION_TIMEOUT = 30 * 60 * 1000; // 30分钟
+        const SESSION_TIMEOUT = 30 * 60 * 1000;
         let state = { username: null, isAdmin: false, currentRoom: null };
 
         const ui = {
@@ -521,6 +268,7 @@
             messages: document.getElementById("messages"),
             userList: document.getElementById("userList"),
             welcome: document.getElementById("welcome"),
+            logoutBtn: document.getElementById("logoutBtn"), // <!--【新增】-->
             inputs: {
                 loginUser: document.getElementById("loginUser"),
                 loginPass: document.getElementById("loginPass"),
@@ -533,72 +281,87 @@
             },
         };
 
+        // ---【新增】--- 登出按钮的事件监听器
+        ui.logoutBtn.addEventListener("click", () => {
+            clearSession(); // 清除本地存储
+            socket.disconnect(); // 主动断开socket连接
+            window.location.reload(); // 刷新页面，回到初始状态
+        });
+
         /** 🔒 会话过期 + 刷新保持登录 **/
-        function startSessionTimer() {
+        function startSessionTimer() { /* ... [此部分代码保持不变] ... */
             const expiry = Date.now() + SESSION_TIMEOUT;
             localStorage.setItem("chatExpiry", expiry);
         }
-        function isSessionExpired() {
+        function isSessionExpired() { /* ... [此部分代码保持不变] ... */
             const expiry = parseInt(localStorage.getItem("chatExpiry") || "0", 10);
             return Date.now() > expiry;
         }
-        function refreshSessionOnActivity() {
+        function refreshSessionOnActivity() { /* ... [此部分代码保持不变] ... */
             ["mousemove", "keydown", "click", "touchstart"].forEach(ev => {
                 document.addEventListener(ev, () => {
                     if (!isSessionExpired()) startSessionTimer();
                 });
             });
         }
-        function saveSession() {
-            localStorage.setItem("chatUser", JSON.stringify({ username: state.username, isAdmin: state.isAdmin }));
+        function saveSession() { /* ... [此部分代码保持不变] ... */
+            localStorage.setItem("chatUser", JSON.stringify({ username: state.username, isAdmin: state.isAdmin, password: state.password }));
             startSessionTimer();
         }
-        function loadSession() {
+        function loadSession() { /* ... [此部分代码保持不变] ... */
             const user = localStorage.getItem("chatUser");
             if (!user) return;
             if (isSessionExpired()) {
                 clearSession();
                 return;
             }
-            const { username, isAdmin } = JSON.parse(user);
+            const { username, isAdmin, password } = JSON.parse(user);
             state.username = username;
             state.isAdmin = isAdmin;
-            switchToChatView();
+            state.password = password; // 恢复密码
+            
+            // 使用保存的凭据自动登录
+            socket.emit("login", { username, password }, (res) => {
+                if (res.success) {
+                    switchToChatView();
+                } else {
+                    // 如果自动登录失败 (例如，服务器重启，密码已更改)，则清除会话
+                    logoutToLogin();
+                    showNotification("自动登录失败，请重新输入。", true);
+                }
+            });
         }
-        function clearSession() {
+        function clearSession() { /* ... [此部分代码保持不变] ... */
             localStorage.removeItem("chatUser");
             localStorage.removeItem("chatExpiry");
         }
-        function logoutToLogin() {
+        function logoutToLogin() { /* ... [此部分代码保持不变] ... */
             clearSession();
             state = { username: null, isAdmin: false, currentRoom: null };
             ui.chatView.classList.add("hidden");
             ui.loginView.classList.remove("hidden");
             showNotification("会话已过期，请重新登录", true);
         }
-
-        setInterval(() => {
+        setInterval(() => { /* ... [此部分代码保持不变] ... */
             if (!ui.chatView.classList.contains("hidden") && isSessionExpired()) logoutToLogin();
-        }, 60 * 1000); // 每分钟检查
+        }, 60 * 1000);
 
         /** UI & 登录逻辑 **/
-        function showNotification(message, isError = false) {
+        function showNotification(message, isError = false) { /* ... [此部分代码保持不变] ... */
             ui.notification.textContent = message;
             ui.notification.className = "";
             ui.notification.classList.add(isError ? "error" : "success", "show");
             setTimeout(() => ui.notification.classList.remove("show"), 3000);
         }
-
-        function switchToChatView() {
+        function switchToChatView() { /* ... [此部分代码保持不变] ... */
             ui.loginView.classList.add("hidden");
             ui.chatView.classList.remove("hidden");
             ui.welcome.textContent = `欢迎, ${state.username}` + (state.isAdmin ? " (管理员)" : "");
-            saveSession();
-            refreshSessionOnActivity();
+            // 注意：saveSession不再在这里调用，而是在成功登录后调用
         }
 
         /** 注册 */
-        ui.registerBtn.addEventListener("click", async () => {
+        ui.registerBtn.addEventListener("click", async () => { /* ... [此部分代码保持不变] ... */
             const { loginUser, loginPass } = ui.inputs;
             if (!loginUser.value || !loginPass.value) return showNotification("请输入用户名和密码", true);
             const res = await fetch("/register", {
@@ -609,12 +372,17 @@
             const data = await res.json();
             showNotification(data.message || data.error, !res.ok);
             if (res.ok) {
-                state.username = loginUser.value;
-                state.isAdmin = false;
-                switchToChatView();
+                 // 注册后自动登录
+                socket.emit("login", { username: loginUser.value, password: loginPass.value }, (loginRes) => {
+                    if (!loginRes.success) return showNotification(loginRes.error, true);
+                    state.username = loginUser.value;
+                    state.password = loginPass.value; // 保存密码
+                    state.isAdmin = loginRes.isAdmin;
+                    saveSession(); // 保存会话
+                    switchToChatView();
+                });
             }
         });
-
         /** 登录 */
         ui.loginForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -622,38 +390,49 @@
             socket.emit("login", { username: loginUser.value, password: loginPass.value }, (res) => {
                 if (!res.success) return showNotification(res.error, true);
                 state.username = loginUser.value;
+                state.password = loginPass.value; // 保存密码
                 state.isAdmin = res.isAdmin;
+                saveSession(); // 保存会话
                 switchToChatView();
             });
         });
-
         /** 游客登录 */
         ui.guestForm.addEventListener("submit", (e) => {
             e.preventDefault();
-            state.username = ui.inputs.guestName.value.trim() || `游客${Math.floor(Math.random() * 10000)}`;
-            state.isAdmin = false;
-            switchToChatView();
-        });
+            const guestName = ui.inputs.guestName.value.trim() || `游客${Math.floor(Math.random() * 10000)}`;
+            
+            // **KEY CHANGE**: We now emit a 'login' event to the server, with no password.
+            socket.emit("login", { username: guestName, password: null }, (res) => {
+                if (!res.success) {
+                    // If the server rejects the login (e.g., name is already registered), show an error.
+                    return showNotification(res.error, true);
+                }
 
+                // The server has approved the login. Now we can set the state and switch the view.
+                // The server might have modified the username (e.g., added "(游客)"), so we use the name from the response.
+                state.username = res.username; 
+                state.isAdmin = false; // Guests are never admins
+                state.password = null; // Guests have no password
+
+                saveSession(); // Save the confirmed session
+                switchToChatView();
+            });
+        });
         /** 房间进入 */
-        ui.joinRoomBtn.addEventListener("click", () => {
+        ui.joinRoomBtn.addEventListener("click", () => { /* ... [此部分代码保持不变] ... */
             const { room, roomPass, createRoom } = ui.inputs;
             if (!room.value || !roomPass.value) return showNotification("请输入房间名和密码", true);
             state.currentRoom = room.value;
-            socket.emit(
-                "join",
-                { room: room.value, password: roomPass.value, name: state.username, createIfNotExist: createRoom.checked },
-                (res) => {
-                    if (!res.success) return showNotification(res.error, true);
-                    ui.messages.innerHTML = "";
-                    res.messages.forEach(addMessage);
-                    ui.inputs.msg.focus();
-                }
-            );
+            socket.emit("join", { room: room.value, password: roomPass.value, name: state.username, createIfNotExist: createRoom.checked }, (res) => {
+                if (!res.success) return showNotification(res.error, true);
+                ui.messages.innerHTML = "";
+                res.messages.forEach(addMessage);
+                ui.inputs.msg.focus();
+            });
         });
 
-        /** 发送消息 */
-        ui.msgForm.addEventListener("submit", (e) => {
+        /** 消息处理 */
+        ui.msgForm.addEventListener("submit", (e) => { /* ... [此部分代码保持不变] ... */
             e.preventDefault();
             const { msg, temp } = ui.inputs;
             if (!msg.value) return;
@@ -661,11 +440,9 @@
             msg.value = "";
             ui.messages.scrollTop = ui.messages.scrollHeight;
         });
-
-        /** 消息显示 */
         socket.on("message", (msg) => addMessage(msg));
         socket.on("system", (text) => addMessage({ text, user: "系统" }));
-        socket.on("tempMessage", (msg) => {
+        socket.on("tempMessage", (msg) => { /* ... [此部分代码保持不变] ... */
             const el = addMessage(msg);
             el.classList.add("temp-message");
             setTimeout(() => {
@@ -673,7 +450,7 @@
                 el.addEventListener("transitionend", () => el.remove());
             }, msg.duration - 1000);
         });
-        socket.on("userList", (users) => {
+        socket.on("userList", (users) => { /* ... [此部分代码保持不变] ... */
             ui.userList.innerHTML = "";
             users.forEach((user) => {
                 const li = document.createElement("li");
@@ -683,8 +460,7 @@
                 ui.userList.appendChild(li);
             });
         });
-
-        function addMessage(msg) {
+        function addMessage(msg) { /* ... [此部分代码保持不变] ... */
             const el = document.createElement("div");
             const bubble = document.createElement("div");
             bubble.className = "message-bubble";
